@@ -5,8 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 int main() {
-    Win* w=initWin(newVec2(800,600),"Win");
-    InitWindow(w->area.x,w->area.y,w->title); 
+    InitWindow(800,600,"Win"); 
     SetTargetFPS(60);
     while (!WindowShouldClose()) {
     DrawFPS(0,0); 
