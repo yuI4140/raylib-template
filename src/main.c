@@ -1,9 +1,5 @@
 #define RAYLIB_IMP
 #include "../headers/raylib_layer.h"
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 int main() {
   InitWindow(800, 600, "Win");
   SetTargetFPS(60);
@@ -14,6 +10,5 @@ int main() {
     EndDrawing();
   }
   CloseWindow();
-
   return 0;
 }
