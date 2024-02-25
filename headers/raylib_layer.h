@@ -1,4 +1,4 @@
-#include "../headers/raylib.h"
+#include "../headers/raylib/raylib-5.0/src/raylib.h"
 #include "defines.h"
 #include <math.h>
 #include <stdarg.h>
@@ -24,7 +24,6 @@ typedef struct {
   Vec2 area;
   str title;
 } Win;
-
 typedef struct {
   union {
     Font f;
