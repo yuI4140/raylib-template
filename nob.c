@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #define COMPILER "gcc"
-#define MAKE "make"
 #define SRC_NAME "main"
 #define NOB_IMPLEMENTATION
 #include "./headers/nob.h"
