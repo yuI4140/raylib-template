@@ -1,2 +1,4 @@
-bin/
-.old
+build/
+*.old
+*.o
+nob

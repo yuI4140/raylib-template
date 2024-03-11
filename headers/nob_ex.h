@@ -1,5 +1,4 @@
 #pragma once
-#include "./nob.h"
 typedef struct Nob_String_View_List {
   Nob_String_View *list;
   size_t count;

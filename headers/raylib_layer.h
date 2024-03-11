@@ -1,4 +1,4 @@
-#include "../headers/raylib/raylib-5.0/src/raylib.h"
+#include "./raylib.h"
 #include "defines.h"
 #include <math.h>
 #include <stdarg.h>
@@ -6,22 +6,22 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-typedef struct Vector2 Vec2;
-typedef struct Vector3 Vec3;
-typedef struct Vector4 Vec4;
+typedef struct Vector2 Vec2_t;
+typedef struct Vector3 Vec3_t;
+typedef struct Vector4 Vec4_t;
 typedef struct {
-  Vec2 v1; // Vertex 1
-  Vec2 v2; // Vertex 2
-  Vec2 v3; // Vertex 3
+  Vec2_t v1; // Vertex 1
+  Vec2_t v2; // Vertex 2
+  Vec2_t v3; // Vertex 3
   Color color;
 } Triangle;
 typedef struct {
-  Vec2 start;
-  Vec2 end;
+  Vec2_t start;
+  Vec2_t end;
   Color color;
 } Rec;
 typedef struct {
-  Vec2 area;
+  Vec2_t area;
   str title;
 } Win;
 typedef struct {
@@ -33,11 +33,11 @@ typedef struct {
 fontManager *initFontM(b8 op, void *font);
 void drawTextF(fontManager *manager, int fontSize, const char *format, ...);
 Color to_hex(const char *hex);
-Win *initWin(Vec2 area, str title);
-Rec *newRec(Vec2 start, Vec2 end, Color color);
-Vec2 newVec2(f32 x, f32 y);
+Win *initWin(Vec2_t area, str title);
+Rec *newRec(Vec2_t start, Vec2_t end, Color color);
+Vec2_t newVec2_t(f32 x, f32 y);
 Rectangle newRectangle(f32 x, f32 y, f32 width, f32 height);
-Triangle *newTriangle(Vec2 v1, Vec2 v2, Vec2 v3, Color color);
+Triangle *newTriangle(Vec2_t v1, Vec2_t v2, Vec2_t v3, Color color);
 void drawTriangle_s(Triangle *tri);
 void drawRec(Rec *rc);
 Rectangle newRectangle(f32 x, f32 y, f32 width, f32 height);
@@ -68,12 +68,12 @@ fontManager *initFontM(b8 op, void *font) {
   }
   return f;
 }
-Win *initWin(Vec2 area, str title) {
+Win *initWin(Vec2_t area, str title) {
   InitWindow((i32)area.x, (i32)area.y, title);
   Win *win = (Win *)malloc(sizeof(Win));
   return win;
 }
-Rec *newRec(Vec2 start, Vec2 end, Color color) {
+Rec *newRec(Vec2_t start, Vec2_t end, Color color) {
   Rec *rc = (Rec *)malloc(sizeof(Rec));
   rc->start = start;
   rc->end = end;
@@ -81,7 +81,7 @@ Rec *newRec(Vec2 start, Vec2 end, Color color) {
   return rc;
 }
 void drawRec(Rec *rc) { DrawLineV(rc->start, rc->end, rc->color); }
-Vec2 newVec2(f32 x, f32 y) { return (Vec2){x, y}; }
+Vec2_t newVec2_t(f32 x, f32 y) { return (Vec2_t){x, y}; }
 Color to_hex(const char *hex) {
   u32 hexValue = (u32)strtol(&hex[1], NULL, 16);
   u32 red = (hexValue >> 16) & 0xFF;
@@ -98,7 +98,7 @@ void drawTextureToRectangle(Texture2D texture, Rectangle rect, Color tint) {
   DrawTexturePro(texture, (Rectangle){0, 0, texture.width, texture.height},
                  rect, (Vector2){0, 0}, 0.0f, tint);
 }
-Triangle *newTriangle(Vec2 v1, Vec2 v2, Vec2 v3, Color color) {
+Triangle *newTriangle(Vec2_t v1, Vec2_t v2, Vec2_t v3, Color color) {
   Triangle *triangle = (Triangle *)malloc(sizeof(Triangle));
   triangle->v1 = v1;
   triangle->v2 = v2;
