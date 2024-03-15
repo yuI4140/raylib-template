@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <string.h>
 #define COMPILER "gcc"
-#define MAKE "make"
 #define SRC_NAME "main"
 #define NOB_IMPLEMENTATION
 #include "./headers/nob.h"
@@ -72,11 +71,20 @@ int move_file(const char *src, const char *dest) {
 #endif
   return result;
 }
+void help(void){
+    nob_log(NOB_INFO,"Flags available:");
+    nob_log(NOB_INFO,"help\nHelp flag for showing this.");
+    nob_log(NOB_INFO,"killy\nkill the main execute.");
+    nob_log(NOB_INFO,"clean\nremove generated files/folders.");
+    exit(1);
+}
 int main(int argc, char *argv[]) {
   Nob_Cmd make = {0};
   Nob_Cmd cmd = {0};
   if (argv[1] != NULL) {
-    if ((strcmp(argv[1], "-killy")) == 0) {
+    if ((strcmp(argv[1], "help")) == 0) {
+        help();
+    }else if ((strcmp(argv[1], "killy")) == 0) {
       if (remove("./nob")) {
         nob_log(NOB_INFO, "Killing youself -> OK.");
         exit(0);
@@ -91,7 +99,13 @@ int main(int argc, char *argv[]) {
         remove("./nob.old");
       }
       exit(0);
+    }else {
+        nob_log(NOB_ERROR,"Unknown flag:%s",argv[1]);
+        nob_log(NOB_INFO,"Type 'help' help you out to know available flags.");
+        exit(1);
     }
+  }else {
+      nob_log(NOB_INFO,"Type 'help' help you out to know available flags.");
   }
   if (nob_file_exists("./nob.old")) {
     remove("./nob.old");
