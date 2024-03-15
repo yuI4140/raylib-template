@@ -30,12 +30,18 @@ typedef struct {
     Texture2D f2;
   } Options;
 } fontManager;
+// op available:'+','-','*','/'
+Vec2_t newVec2_t(f32 x, f32 y);
+Vec2_t opVec2_t(Vec2_t *a, Vec2_t *b, char op);
+Vec3_t newVec3_t(f32 x, f32 y, f32 z);
+Vec3_t opVec3_t(Vec3_t *a, Vec3_t *b, char op);
+Vec4_t newVec4_t(f32 x, f32 y, f32 z, f32 w);
+Vec4_t opVec4_t(Vec4_t *a, Vec4_t *b, char op);
 fontManager *initFontM(b8 op, void *font);
 void drawTextF(fontManager *manager, int fontSize, const char *format, ...);
 Color to_hex(const char *hex);
 Win *initWin(Vec2_t area, str title);
 Rec *newRec(Vec2_t start, Vec2_t end, Color color);
-Vec2_t newVec2_t(f32 x, f32 y);
 Rectangle newRectangle(f32 x, f32 y, f32 width, f32 height);
 Triangle *newTriangle(Vec2_t v1, Vec2_t v2, Vec2_t v3, Color color);
 void drawTriangle_s(Triangle *tri);
@@ -82,6 +88,96 @@ Rec *newRec(Vec2_t start, Vec2_t end, Color color) {
 }
 void drawRec(Rec *rc) { DrawLineV(rc->start, rc->end, rc->color); }
 Vec2_t newVec2_t(f32 x, f32 y) { return (Vec2_t){x, y}; }
+Vec2_t opVec2_t(Vec2_t *a, Vec2_t *b, char op) {
+  Vec2_t ret = {0};
+  switch (op) {
+  case '+':
+    ret.x = a->x + b->x;
+    ret.y = a->y + b->y;
+    break;
+  case '-':
+    ret.x = a->x - b->x;
+    ret.y = a->y - b->y;
+    break;
+  case '*':
+    ret.x = a->x * b->x;
+    ret.y = a->y * b->y;
+    break;
+  case '/':
+    ret.x = (float)a->x / (float)b->x;
+    ret.y = (float)a->y / (float)b->y;
+    break;
+  default:
+    return (Vec2_t){0, 0};
+    break;
+  }
+  return ret;
+}
+Vec3_t newVec3_t(f32 x, f32 y, f32 z) { return (Vec3_t){x, y, z}; }
+Vec3_t opVec3_t(Vec3_t *a, Vec3_t *b, char op) {
+  Vec3_t ret = {0};
+  switch (op) {
+  case '+':
+    ret.x = a->x + b->x;
+    ret.y = a->y + b->y;
+    ret.z = a->z + b->z;
+    break;
+  case '-':
+    ret.x = a->x - b->x;
+    ret.y = a->y - b->y;
+    ret.z = a->z - b->z;
+    break;
+  case '*':
+    ret.x = a->x * b->x;
+    ret.y = a->y * b->y;
+    ret.z = a->z * b->z;
+    break;
+  case '/':
+    ret.x = (float)a->x / (float)b->x;
+    ret.y = (float)a->y / (float)b->y;
+    ret.z = a->z / b->z;
+    break;
+  default:
+    return (Vec3_t){0, 0, 0};
+    break;
+  }
+  return ret;
+}
+Vec4_t newVec4_t(f32 x, f32 y, f32 z, f32 w) { return (Vec4_t){x, y, z, w}; }
+Vec4_t opVec4_t(Vec4_t *a, Vec4_t *b, char op) {
+  Vec4_t ret = {0};
+  switch (op) {
+  case '+':
+    ret.x = a->x + b->x;
+    ret.y = a->y + b->y;
+    ret.z = a->z + b->z;
+    ret.w = a->w + b->w;
+    break;
+  case '-':
+    ret.x = a->x - b->x;
+    ret.y = a->y - b->y;
+    ret.z = a->z - b->z;
+    ret.w = a->w - b->w;
+    break;
+  case '*':
+    ret.x = a->x * b->x;
+    ret.y = a->y * b->y;
+    ret.z = a->z * b->z;
+    ret.w = a->w * b->w;
+    break;
+  case '/':
+    ret.x = (float)a->x / (float)b->x;
+    ret.y = (float)a->y / (float)b->y;
+    ret.z = a->z / b->z;
+    ret.w = a->w / b->w;
+    break;
+  default:
+    return (Vec4_t){0, 0, 0, 0};
+    break;
+  }
+  return ret;
+}
+
 Color to_hex(const char *hex) {
   u32 hexValue = (u32)strtol(&hex[1], NULL, 16);
   u32 red = (hexValue >> 16) & 0xFF;
