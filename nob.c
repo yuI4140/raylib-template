@@ -1,7 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#define DEV_FEATURE 0
 #define COMPILER "gcc"
 #define SRC_NAME "main"
 #define NOB_IMPLEMENTATION
@@ -34,6 +33,7 @@ int remove_dir(const char *path) {
     return rmdir(path);
 #endif
 }
+#ifdef DEV_FEATURE
 int remove_recursive(const char *path) {
     struct stat path_stat;
     if (stat(path, &path_stat) != 0) {
@@ -62,6 +62,7 @@ int remove_recursive(const char *path) {
 
     return 0;
 }
+#endif
 int move_file(const char *src, const char *dest) {
   int result = 0;
 #ifdef _WIN32
@@ -85,11 +86,17 @@ int main(int argc, char *argv[]) {
     if ((strcmp(argv[1], "help")) == 0) {
         help();
     }else if ((strcmp(argv[1], "killy")) == 0) {
+      if(DEV_FEATURE){
       if (remove("./nob")) {
         nob_log(NOB_INFO, "Killing youself -> OK.");
         exit(0);
       }
+      }else {
+      nob_log(NOB_INFO,"The killy feature is not implemented yet");
+      exit(0);
+      }
     } else if ((strcmp(argv[1], "clean")) == 0) {
+      if(DEV_FEATURE){
       nob_log(NOB_INFO, "removing './build/'");
       remove_recursive("./build/");
       nob_log(NOB_INFO, "removing './lib/src'");
@@ -98,7 +105,10 @@ int main(int argc, char *argv[]) {
       if (nob_file_exists("./nob.old")) {
         remove("./nob.old");
       }
+      }else {
+      nob_log(NOB_INFO,"The clean feature is not implemented yet");
       exit(0);
+      }
     }else {
         nob_log(NOB_ERROR,"Unknown flag:%s",argv[1]);
         nob_log(NOB_INFO,"Type 'help' help you out to know available flags.");
