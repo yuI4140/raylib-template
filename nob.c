@@ -33,7 +33,7 @@ int remove_dir(const char *path) {
     return rmdir(path);
 #endif
 }
-#ifdef DEV_FEATURE
+#if defined(_POSIX_C_SOURCE) && defined(DEV_FEATURE)
 int remove_recursive(const char *path) {
     struct stat path_stat;
     if (stat(path, &path_stat) != 0) {
@@ -96,7 +96,7 @@ int main(int argc, char *argv[]) {
       exit(0);
       }
     } else if ((strcmp(argv[1], "clean")) == 0) {
-      if(DEV_FEATURE){
+      if(_POSIX_C_SOURCE && DEV_FEATURE){
       nob_log(NOB_INFO, "removing './build/'");
       remove_recursive("./build/");
       nob_log(NOB_INFO, "removing './lib/src'");
