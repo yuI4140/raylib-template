@@ -21,48 +21,18 @@
 #endif
 int remove_file(const char *path) {
 #ifdef _WIN32
-    return _unlink(path);
+  return _unlink(path);
 #else
-    return remove(path);
+  return remove(path);
 #endif
 }
 int remove_dir(const char *path) {
 #ifdef _WIN32
-    return _rmdir(path);
+  return _rmdir(path);
 #else
-    return rmdir(path);
+  return rmdir(path);
 #endif
 }
-#if defined(_POSIX_C_SOURCE) && defined(DEV_FEATURE)
-int remove_recursive(const char *path) {
-    struct stat path_stat;
-    if (stat(path, &path_stat) != 0) {
-        return -1;
-    }
-
-    if (S_ISDIR(path_stat.st_mode)) {
-        DIR *dir;
-        struct dirent *entry;
-        if ((dir = opendir(path)) == NULL) {
-            return -1;
-        }
-
-        while ((entry = readdir(dir)) != NULL) {
-            if (strcmp(entry->d_name, ".") != 0 && strcmp(entry->d_name, "..") != 0) {
-                char full_path[1024];
-                snprintf(full_path, sizeof(full_path), "%s/%s", path, entry->d_name);
-                remove_recursive(full_path);
-            }
-        }
-        closedir(dir);
-        remove_dir(path);
-    } else {
-        remove_file(path);
-    }
-
-    return 0;
-}
-#endif
 int move_file(const char *src, const char *dest) {
   int result = 0;
 #ifdef _WIN32
@@ -72,50 +42,39 @@ int move_file(const char *src, const char *dest) {
 #endif
   return result;
 }
-void help(void){
-    nob_log(NOB_INFO,"Flags available:");
-    nob_log(NOB_INFO,"help\nHelp flag for showing this.");
-    nob_log(NOB_INFO,"killy\nkill the main execute.");
-    nob_log(NOB_INFO,"clean\nremove generated files/folders.");
-    exit(1);
+void help(void) {
+  nob_log(NOB_INFO, "Flags available:");
+  nob_log(NOB_INFO, "help\nHelp flag for showing this.");
+  nob_log(NOB_INFO, "killy\nkill the main execute.");
+  nob_log(NOB_INFO, "clean\nremove generated files/folders.");
+  exit(1);
 }
 int main(int argc, char *argv[]) {
   Nob_Cmd make = {0};
   Nob_Cmd cmd = {0};
   if (argv[1] != NULL) {
     if ((strcmp(argv[1], "help")) == 0) {
-        help();
-    }else if ((strcmp(argv[1], "killy")) == 0) {
-      if(DEV_FEATURE){
-      if (remove("./nob")) {
-        nob_log(NOB_INFO, "Killing youself -> OK.");
+      help();
+    } else if ((strcmp(argv[1], "killy")) == 0) {
+      if (DEV_FEATURE) {
+        if (remove("./nob")) {
+          nob_log(NOB_INFO, "Killing youself -> OK.");
+          exit(0);
+        }
+      } else {
+        nob_log(NOB_INFO, "The killy feature is not implemented yet");
         exit(0);
       }
-      }else {
-      nob_log(NOB_INFO,"The killy feature is not implemented yet");
-      exit(0);
-      }
     } else if ((strcmp(argv[1], "clean")) == 0) {
-      if(_POSIX_C_SOURCE && DEV_FEATURE){
-      nob_log(NOB_INFO, "removing './build/'");
-      remove_recursive("./build/");
-      nob_log(NOB_INFO, "removing './lib/src'");
-      remove_recursive("./lib/src/");
-      nob_log(NOB_INFO, "removing if exists './nob.old'");
-      if (nob_file_exists("./nob.old")) {
-        remove("./nob.old");
-      }
-      }else {
-      nob_log(NOB_INFO,"The clean feature is not implemented yet");
+      nob_log(NOB_INFO, "The clean feature is not implemented yet");
       exit(0);
-      }
-    }else {
-        nob_log(NOB_ERROR,"Unknown flag:%s",argv[1]);
-        nob_log(NOB_INFO,"Type 'help' help you out to know available flags.");
-        exit(1);
+    } else {
+      nob_log(NOB_ERROR, "Unknown flag:%s", argv[1]);
+      nob_log(NOB_INFO, "Type 'help' help you out to know available flags.");
+      exit(1);
     }
-  }else {
-      nob_log(NOB_INFO,"Type 'help' help you out to know available flags.");
+  } else {
+    nob_log(NOB_INFO, "Type 'help' help you out to know available flags.");
   }
   if (nob_file_exists("./nob.old")) {
     remove("./nob.old");
