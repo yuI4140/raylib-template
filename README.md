@@ -4,8 +4,10 @@ A template for raylib
 - linux
 - windows
 ## building
+Dependencies:
+- ZLIB
 ```bash
-C-COMPILER -o nob nob.c # Only Once
+C-COMPILER -o nob nob.c -lz
 ./nob
 ```
 And now you have the template set up.
