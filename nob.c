@@ -3,11 +3,12 @@
 #include <string.h>
 #define NOB_IMPLEMENTATION
 #include "./headers/nob.h"
+#include <zlib.h>
 
 #define SRC_NAME "main"
 #define SRC_EXE "./build/" SRC_NAME
 #define DEBUG_FLAGS  "-g","-Wall","-Wextra","-Wpedantic"
-#define RELEASE_FLAGS "-O3","-Oz","-s"
+#define RELEASE_FLAGS "-O3","-Oz","-s","-ffunction-sections","-Wl,--gc-sections"
 #define LIB_FLAGS "-lm","-L./lib/","-l:libraylib.a"  
 
 
@@ -32,7 +33,19 @@ void run_command(const char *command) {
         exit(EXIT_FAILURE);
     }
 }
+const char* human_readable_size(long long bytes) {
+    const char* units[] = {"B", "KB", "MB", "GB", "TB"};
+    int unit_index = 0;
+    double size = (double)bytes;
 
+    while (size >= 1024 && unit_index < sizeof(units) / sizeof(units[0]) - 1) {
+        size /= 1024;
+        unit_index++;
+    }
+    static char result[64];
+    snprintf(result, sizeof(result), "%.2f %s", size, units[unit_index]);
+    return result;
+}
 enum BuildType{
     BShared=0,
     BStatic
@@ -60,15 +73,36 @@ void setup_raylib(enum BuildType type) {
     }
 }
 enum Flags{
+    FReleaseOz,
     FRelease,
     FDebug
 };
+int compress_data(const char *input, size_t input_size, char *output, size_t *output_size) {
+    return compress((Bytef *)output, output_size, (const Bytef *)input, input_size);
+}
+int ncompress(void){
+    Nob_String_Builder reader={0};     
+        if (!nob_read_entire_file(SRC_EXE,&reader)) {
+            nob_log(NOB_ERROR,"reading: %s",SRC_EXE);
+            return -1;
+        }
+        char compressed[reader.capacity];
+        size_t compressed_size = sizeof(compressed); 
+        int result = compress_data(reader.items,reader.count, compressed, &compressed_size);
+        if (result == Z_OK) {
+        nob_log(NOB_INFO,"Compressed size: %s",human_readable_size(compressed_size));
+        } else {
+        nob_log(NOB_ERROR,"Compression failed with error code: %d", result);
+        return -1;
+        }
+    return 0;
+}
 int compile(enum Flags flag) {
     if (!nob_mkdir_if_not_exists("./build")) { return -1; }
     printf("Compiling %s...\n", SRC_NAME);
     Nob_Cmd cmd={0};;;
     nob_cmd_append(&cmd,CC);
-    if (flag==FRelease) {
+    if (flag==FReleaseOz || flag==FRelease) {
         nob_cmd_append(&cmd,RELEASE_FLAGS);
     }else if (flag==FDebug) {
         nob_cmd_append(&cmd,DEBUG_FLAGS);
@@ -77,7 +111,11 @@ int compile(enum Flags flag) {
     }
     nob_cmd_append(&cmd,"-o",SRC_EXE,SRC);
     nob_cmd_append(&cmd,LIB_FLAGS);
-    return nob_cmd_run_sync(cmd);
+    int comp_ret=nob_cmd_run_sync(cmd);
+    if (flag==FReleaseOz) {
+        if(!ncompress()){ return -1; }
+    }
+    return comp_ret; 
 }
 
 int run_program(enum Flags flag) {
@@ -128,7 +166,6 @@ bool is_simple_flag(const char *flag){
    return is_flag(flag)&&flag[2]==0; 
 }
 int main(int argc, char *argv[]) {
-    NOB_GO_REBUILD_URSELF(argc, argv);
     bool args_on=false;
     if (argc>1) {
       args_on=true; 
@@ -155,6 +192,8 @@ int main(int argc, char *argv[]) {
              char sf=flag[1];
              if (sf=='R') {
                 compile(FRelease);
+             }else if (sf=='Z') {
+                compile(FReleaseOz);
              }else if (sf=='r') {
                 run_program(FDebug);
              }else if (sf=='C') {
