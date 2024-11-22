@@ -10,7 +10,6 @@
 #define DEBUG_FLAGS "-g", "-Wall", "-Wextra", "-Wpedantic"
 #define RELEASE_FLAGS "-O3", "-Oz", "-s"
 #define LIB_FLAGS "-lm", "-L./lib/", "-l:libraylib.a"
-#define ENABLE_BUNDLE "./src/bundle.c"
 
 #define CC "gcc"
 #define BUILD_TYPE "shared"
